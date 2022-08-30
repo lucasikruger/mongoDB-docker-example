@@ -1,0 +1,69 @@
+#    |-----------------------------------------------------------------------|   
+#    |                      DOCKER COMPOSE FOR COLIBRI ADAS                  |
+#    |                         Zowllabs - ADAS V4.1.2                        |
+#    |                      images: python and mongo                         |
+#    |                         BY:  Lucas K.                                 |   
+#    |-----------------------------------------------------------------------|
+
+version: "3.9"
+
+services:                                     # Services we'll use
+ 
+
+# ========== DB SERVICES ===============================================================================
+
+ mongo_service:                                  # MongoDB service
+  container_name: "mongo"                # Name of the container
+  build:                              # MongoDB image
+   context: ./mongo
+  ports:
+   - "27017:27017"                            # Port 27017 exposed to the host
+
+  restart: always                             # Restart the container always
+
+  environment:                                # Set environment variables
+   - MONGO_INITDB_ROOT_USERNAME=admin
+   - MONGO_INITDB_ROOT_PASSWORD=secret
+   - MONGO_INITDB_DATABASE=test
+  volumes:                                    # Volumes to mount
+   - ./mongo/data/db:/data/db                       # this data folder contains backup,config,logs
+   - ./mongo/sh:/data/sh 	 
+   - ./mongo/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+   - ./mongo/conf:/etc/mongo/
+  command: mongod --config /etc/mongo/mongod.conf
+  network_mode: 
+   "host"
+ # ------------------------------------------------------------------------------------------------------
+ 
+ 
+ mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+     ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+     ME_CONFIG_MONGODB_ADMINPASSWORD: secret
+     ME_CONFIG_MONGODB_URL: mongodb://admin:secret@localhost:27017/
+    network_mode: 
+     "host"
+ # ------------------------------------------------------------------------------------------------------
+
+ backupMongo_service:
+  container_name: "backupMongo"                # Name of the container
+  image: tiredofit/mongodb-backup
+  network_mode: 
+   "host"
+  volumes:
+    - ./mongo-backup/backups:/backups
+  restart: always
+  environment:
+    - DB_HOST=localhost
+    - DB_NAME=test
+    - DB_USER=admin 
+    - DB_PASS=secret
+    - DB_DUMP_FREQ=1440
+    - DB_DUMP_BEGIN=1600
+    - DB_CLEANUP_TIME=8640
+    - MD5=TRUE
+    - COMPRESSION=XZ
