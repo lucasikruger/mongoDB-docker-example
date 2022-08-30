@@ -1,3 +1,16 @@
+# Mongo DB Example 
+In this repository we are trying to create a practical implementation of mongodb with docker.
+It includes:
+- Mongo db full configurable (users, mongod.conf, autorizathion, bindIP, and more)
+- Scripts runned with crontab for auto cleaning
+- a docker for auto backups
+- a docker that can be used as a browser
+
+I hope it helps you :)
+
+# Mongo DB Tests
+There is a file that can be run in jupyter notebook and let us see that everything is working fine.
+This project was tested by myself.
 # Mongo DB Authentication Explanation
 
 This documentation is created with the porpose of learning how to manage mongo Db authentication.
